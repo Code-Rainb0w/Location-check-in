@@ -41,7 +41,7 @@ function locationSuccess(position) {
 
 async function sendAlertToTwilio(userMessage, latitude, longitude, accuracy) {
     const functionUrl =
-        "https://secure-check-in-4205.twil.io/send-location";
+        "https://hello-messaging-9257-zbs6be.twil.io/hello-messaging";
 
     try {
         const response = await fetch(functionUrl, {

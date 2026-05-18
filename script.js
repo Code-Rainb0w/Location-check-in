@@ -31,26 +31,15 @@ function locationSuccess(position) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const accuracy = Math.round(position.coords.accuracy);
-
     const userMessage = messageBox.value.trim();
 
     statusMessage.textContent =
-        "Location acquired. Preparing secure transmission...";
+        "Location acquired. Contacting alert server...";
 
-    sendAlertToTwilio(
-        userMessage,
-        latitude,
-        longitude,
-        accuracy
-    );
+    sendAlertToTwilio(userMessage, latitude, longitude, accuracy);
 }
 
-async function sendAlertToTwilio(
-    userMessage,
-    latitude,
-    longitude,
-    accuracy
-) {
+async function sendAlertToTwilio(userMessage, latitude, longitude, accuracy) {
     const functionUrl =
         "https://secure-check-in-4205.twil.io/send-location";
 
@@ -70,23 +59,23 @@ async function sendAlertToTwilio(
 
         const result = await response.json();
 
-        if (result.success) {
+        if (response.ok && result.success) {
             statusMessage.textContent =
                 "Location transmitted successfully.";
 
             messageBox.value = "";
         } else {
             statusMessage.textContent =
-                "Transmission failed.";
+                "Transmission failed. Check Twilio logs.";
 
-            console.error(result.error);
+            console.error("Twilio error:", result.error);
         }
 
     } catch (error) {
         statusMessage.textContent =
             "Unable to contact alert server.";
 
-        console.error(error);
+        console.error("Fetch error:", error);
     }
 
     resetButton();
@@ -111,7 +100,7 @@ function locationError(error) {
 
         default:
             statusMessage.textContent =
-                "An unexpected error occurred.";
+                "An unexpected location error occurred.";
     }
 
     resetButton();

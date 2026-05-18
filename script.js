@@ -54,7 +54,7 @@ function locationSuccess(position) {
         "Location acquired. Preparing secure transmission...";
 
     // Replace with YOUR phone number
-    const phoneNumber = "YOUR_PHONE_NUMBER_HERE";
+    const phoneNumber = "425-534-0476";
 
     // Open SMS app with prefilled message
     window.location.href =

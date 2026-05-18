@@ -10,8 +10,7 @@ function sendLocation() {
     sendButton.textContent = "Transmitting...";
 
     if (!navigator.geolocation) {
-        statusMessage.textContent =
-            "Location services are not supported on this device.";
+        statusMessage.textContent = "Location services are not supported.";
         resetButton();
         return;
     }
@@ -33,49 +32,35 @@ function locationSuccess(position) {
     const accuracy = Math.round(position.coords.accuracy);
     const userMessage = messageBox.value.trim();
 
-    statusMessage.textContent =
-        "Location acquired. Contacting alert server...";
+    statusMessage.textContent = "Location acquired. Contacting alert server...";
 
     sendAlertToTwilio(userMessage, latitude, longitude, accuracy);
 }
 
 async function sendAlertToTwilio(userMessage, latitude, longitude, accuracy) {
-    const functionUrl =
-        "https://secure-check-in-4205-dev.twil.io/send-location";
-        
+    const functionUrl = "https://secure-check-in-4205-dev.twil.io/send-location";
+
+    const params = new URLSearchParams({
+        message: userMessage || "No message provided",
+        latitude: latitude,
+        longitude: longitude,
+        accuracy: accuracy
+    });
 
     try {
-        const response = await fetch(functionUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: new URLSearchParams({
-                message: userMessage || "No message provided",
-                latitude: latitude,
-                longitude: longitude,
-                accuracy: accuracy
-            })
-        });
-
+        const response = await fetch(`${functionUrl}?${params.toString()}`);
         const result = await response.json();
 
-        if (response.ok && result.success) {
-            statusMessage.textContent =
-                "Location transmitted successfully.";
-
+        if (result.success) {
+            statusMessage.textContent = "Location transmitted successfully.";
             messageBox.value = "";
         } else {
-            statusMessage.textContent =
-                "Transmission failed. Check Twilio logs.";
-
-            console.error("Twilio error:", result.error);
+            statusMessage.textContent = "Transmission failed. Check Twilio logs.";
+            console.error(result.error);
         }
 
     } catch (error) {
-        statusMessage.textContent =
-            "Unable to contact alert server.";
-
+        statusMessage.textContent = "Unable to contact alert server.";
         console.error("Fetch error:", error);
     }
 
@@ -85,23 +70,16 @@ async function sendAlertToTwilio(userMessage, latitude, longitude, accuracy) {
 function locationError(error) {
     switch (error.code) {
         case error.PERMISSION_DENIED:
-            statusMessage.textContent =
-                "Location permission was denied.";
+            statusMessage.textContent = "Location permission was denied.";
             break;
-
         case error.POSITION_UNAVAILABLE:
-            statusMessage.textContent =
-                "Unable to determine location.";
+            statusMessage.textContent = "Unable to determine location.";
             break;
-
         case error.TIMEOUT:
-            statusMessage.textContent =
-                "Location request timed out.";
+            statusMessage.textContent = "Location request timed out.";
             break;
-
         default:
-            statusMessage.textContent =
-                "An unexpected location error occurred.";
+            statusMessage.textContent = "An unexpected location error occurred.";
     }
 
     resetButton();

@@ -6,15 +6,12 @@ sendButton.addEventListener("click", sendLocation);
 
 function sendLocation() {
     statusMessage.textContent = "Accessing secure location...";
-
     sendButton.disabled = true;
     sendButton.textContent = "Transmitting...";
 
-    // Check if geolocation is supported
     if (!navigator.geolocation) {
         statusMessage.textContent =
             "Location services are not supported on this device.";
-
         resetButton();
         return;
     }
@@ -33,32 +30,64 @@ function sendLocation() {
 function locationSuccess(position) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
-    const accuracy = position.coords.accuracy;
+    const accuracy = Math.round(position.coords.accuracy);
 
     const userMessage = messageBox.value.trim();
-
-    // Apple Maps link
-    const mapsLink =
-        `https://maps.apple.com/?q=Jake%27s%20Location&ll=${latitude},${longitude}`;
-
-    // Build text message
-    const alertText =
-        `📍 Check In Alert\n\n` +
-        `Message: ${userMessage || "No message provided"}\n\n` +
-        `Location:\n${mapsLink}\n\n` +
-        `GPS Accuracy: ±${Math.round(accuracy)} meters`;
-
-    console.log(alertText);
 
     statusMessage.textContent =
         "Location acquired. Preparing secure transmission...";
 
-    // Replace with YOUR phone number
-    const phoneNumber = "425-534-0476";
+    sendAlertToTwilio(
+        userMessage,
+        latitude,
+        longitude,
+        accuracy
+    );
+}
 
-    // Open SMS app with prefilled message
-    window.location.href =
-        `sms:${phoneNumber}?body=${encodeURIComponent(alertText)}`;
+async function sendAlertToTwilio(
+    userMessage,
+    latitude,
+    longitude,
+    accuracy
+) {
+    const functionUrl =
+        "https://secure-check-in-4205.twil.io/send-location";
+
+    try {
+        const response = await fetch(functionUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                message: userMessage || "No message provided",
+                latitude: latitude,
+                longitude: longitude,
+                accuracy: accuracy
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            statusMessage.textContent =
+                "Location transmitted successfully.";
+
+            messageBox.value = "";
+        } else {
+            statusMessage.textContent =
+                "Transmission failed.";
+
+            console.error(result.error);
+        }
+
+    } catch (error) {
+        statusMessage.textContent =
+            "Unable to contact alert server.";
+
+        console.error(error);
+    }
 
     resetButton();
 }

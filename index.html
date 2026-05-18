@@ -4,53 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Check In</title>
-
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Google Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+    <main class="app-shell">
+        <section class="glass-card">
 
-    <main class="container">
+            <div class="hud-line"></div>
 
-        <section class="card">
+            <h1>
+                Check In <span class="heart">♥</span>
+            </h1>
 
-            <h1>Check In 💜</h1>
-
-            <p class="subtitle">
-                Send your location and an optional message.
-            </p>
-
-            <!-- Optional Message -->
-            <label for="message">
-                Message (Optional)
-            </label>
-
-            <textarea
+            <textarea 
                 id="message"
-                placeholder="Leave a message..."
-                rows="4"
+                placeholder="Send location and optional message..."
             ></textarea>
 
-            <!-- Send Location Button -->
-            <button id="sendLocationBtn">
-                Send Location
+            <div class="radar">
+                <div class="radar-dot"></div>
+            </div>
+
+            <h2>Ready to transmit</h2>
+
+            <p class="subtext">
+                Your secure location will be sent to your emergency contact.
+            </p>
+
+            <button id="sendLocationBtn" aria-label="Transmit Location">
+                ➤
             </button>
 
-            <!-- Status Message -->
-            <p id="statusMessage"></p>
+            <p id="statusMessage">Secure. Private. Encrypted.</p>
 
         </section>
-
     </main>
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
-
+    <script src="script.js?v=3"></script>
 </body>
 </html>
